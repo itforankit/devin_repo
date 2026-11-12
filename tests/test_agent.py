@@ -83,8 +83,8 @@ class TestRetrievalPath:
         assert assistant["tool_calls"][0]["function"]["name"] == "retrieve"
         assert tool_msg["role"] == "tool"
         assert tool_msg["tool_call_id"] == "call_1"
-        assert tool_msg["content"].startswith("[1] (source: policy.pdf, chunk 3)\n30 days")
-        assert "[2] (source: faq.md, chunk 0)" in tool_msg["content"]
+        assert tool_msg["content"].startswith('<source id="1" file="policy.pdf">\n30 days')
+        assert '<source id="2" file="faq.md">' in tool_msg["content"]
 
     def test_reformulation_reuses_numbers_for_duplicate_chunks(self):
         a, b = chunk("a.txt", 0), chunk("b.txt", 1)
@@ -101,8 +101,8 @@ class TestRetrievalPath:
 
         assert result.queries == ["first try", "reformulated"]
         second_tool_output = client.calls[2]["messages"][-1]["content"]
-        assert second_tool_output.startswith("[1] (source: a.txt, chunk 0)")
-        assert "[2] (source: b.txt, chunk 1)" in second_tool_output
+        assert second_tool_output.startswith('<source id="1" file="a.txt">')
+        assert '<source id="2" file="b.txt">' in second_tool_output
         assert result.answer == "Answer from b [1] and a [2]."
         assert [c.source for c in result.sources] == ["b.txt", "a.txt"]
 
@@ -206,8 +206,11 @@ class TestCitationFormatting:
         assert text == "Use list[str] or [a] here."
         assert cites == []
 
-    def test_registry_formats_numbered_blocks(self):
+    def test_registry_formats_tagged_blocks(self):
         reg = SourceRegistry()
         out = reg.format_results([chunk("a.txt", 0, "alpha"), chunk("b.txt", 4, "beta")])
-        assert out == "[1] (source: a.txt, chunk 0)\nalpha\n\n[2] (source: b.txt, chunk 4)\nbeta"
+        assert out.startswith(
+            '<source id="1" file="a.txt">\nalpha\n</source>\n\n'
+            '<source id="2" file="b.txt">\nbeta\n</source>'
+        )
         assert reg.add(chunk("a.txt", 0)) == 1
