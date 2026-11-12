@@ -1,0 +1,62 @@
+[
+  {
+    "id": "q1",
+    "question": "What is the typical flight endurance of the Kestrel K7 with the Ortho-42 camera?",
+    "answer": "About 110 minutes in calm conditions with both packs fully charged.",
+    "evidence": "typical flight endurance is 110 minutes"
+  },
+  {
+    "id": "q2",
+    "question": "How long does the drone wait after losing the command link before returning home, and what altitude does it climb to by default?",
+    "answer": "After more than 8 seconds of command-link loss it enters Return-to-Home and climbs to the default RTH altitude of 120 metres.",
+    "evidence": "lost for more than 8 seconds"
+  },
+  {
+    "id": "q3",
+    "question": "When is a K7 battery pack considered end-of-life?",
+    "answer": "After 400 charge cycles or when measured capacity falls below 80% of rated capacity, whichever comes first.",
+    "evidence": "end-of-life after 400 charge cycles"
+  },
+  {
+    "id": "q4",
+    "question": "What maintenance is required every 100 flight hours?",
+    "answer": "Replace all five propellers and inspect the wing spar joints.",
+    "evidence": "Every 100 flight hours"
+  },
+  {
+    "id": "q5",
+    "question": "How long is the battery warranty?",
+    "answer": "12 months or 200 charge cycles, whichever comes first.",
+    "evidence": "Batteries are covered for 12 months or 200 charge cycles"
+  },
+  {
+    "id": "q6",
+    "question": "What does KestrelCare Plus add, and by when must it be bought?",
+    "answer": "It must be purchased within 30 days of purchase; it extends airframe coverage to 36 months, includes one accidental-damage replacement per year for 450 euros per incident, and includes 24/7 priority phone support.",
+    "evidence": "KestrelCare Plus plan within 30 days"
+  },
+  {
+    "id": "q7",
+    "question": "Can I fly the K7 in the rain?",
+    "answer": "Only light rain: it is rated IP54, so it may fly in light rain but must never be flown in heavy rain, snow, or hail (water damage from heavy rain is not covered by warranty).",
+    "evidence": "rated IP54"
+  },
+  {
+    "id": "q8",
+    "question": "What happens to the warranty if I skip the 300-hour overhaul?",
+    "answer": "Skipping the 300-hour overhaul voids the airframe warranty.",
+    "evidence": "Skipping the 300-hour overhaul voids the airframe warranty"
+  },
+  {
+    "id": "q9",
+    "question": "What do I need to include when requesting a repair, and how long do standard repairs take?",
+    "answer": "Open an RMA in the customer portal with the aircraft serial number and the last mission's flight log; standard repairs take 10 business days from arrival at the service centre.",
+    "evidence": "Return Merchandise Authorisation"
+  },
+  {
+    "id": "q10",
+    "question": "What is the range of the live video link compared to the control link?",
+    "answer": "The 5.8 GHz live video link has an 8 km range, versus 15 km line-of-sight for the 2.4 GHz command-and-control link.",
+    "evidence": "5.8 GHz link with a range of 8 kilometres"
+  }
+]
