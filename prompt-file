@@ -1,0 +1,14 @@
+This is a fresh repo - https://github.com/itforankit/devin_repo.git . Bootstrap and build an Agentic RAG System end to end:
+SETUP(do this first):
+1.	Create requirements.txt with all dependencies (use a vector store that runs locally, e.g. Chroma or FAISS, plus OpenAI for embedding/LLM – my OPENAI_API_KEY is available as an environment variable).
+2.	Create an AGENTS.md describing the project structure and conventions (tests required, no secret in code, lint before PRs).
+3.	Create attesting skill at .agents/skills/test-app/ documenting exactly how to install, run and test this app – you’ll use it yourself before every PR.
+BUILD:
+4.	Ingestion: load PDF, DOCX and text file, chunk them, embed them, store in the vector store.
+5.	Retrieval agent: an agent that decides when retrieval is needed, what to query, and answers with citations to source chunks.
+6.	Eval harness: a script that runs a fixed question set and scores the agentic system against a naïve single-shot retrieval baseline, printing a comparison table.
+7.	Web UI: a simple chat interface (streamlit + a smal frontend) where I can upload a document and ask question and track latency.
+Rules:
+-	Work in small commits; open a pr for each working slice.
+-	Write tests for core logic and make them pass.
+-	Before any PR that touches the UI, run the app and test it using the test-app skill, and attach a video recording of the test.
