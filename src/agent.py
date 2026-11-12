@@ -37,6 +37,9 @@ reformulated query (different wording, synonyms, or a narrower/broader focus).
 - Answer ONLY from retrieved sources. Cite every factual claim inline with the source \
 number in square brackets, e.g. "The limit is 5 GB [2]." Use separate brackets for \
 multiple sources: [1][3]. Never invent source numbers.
+- Cite precisely: a source number may only follow a claim that the passage with that \
+number explicitly states. Re-read the passage before citing it. Do not cite a passage \
+just because it is from the same document or topic (e.g. an introduction or overview).
 - If the sources do not contain the answer, say you could not find it in the documents."""
 
 RETRIEVE_TOOL = {
@@ -110,10 +113,11 @@ class SourceRegistry:
         blocks = []
         for chunk in chunks:
             n = self.add(chunk)
-            blocks.append(
-                f"[{n}] (source: {chunk.source}, chunk {chunk.chunk_index})\n{chunk.text}"
-            )
-        return "\n\n".join(blocks)
+            blocks.append(f'<source id="{n}" file="{chunk.source}">\n{chunk.text}\n</source>')
+        return (
+            "\n\n".join(blocks)
+            + "\n\nCite a fact as [id] using the id of the <source> that states it."
+        )
 
 
 def finalize_citations(
