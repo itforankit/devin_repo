@@ -142,6 +142,23 @@ def ingest_directory(directory: str | Path, collection=None, client=None) -> lis
     ]
 
 
+def list_sources(collection=None) -> dict[str, int]:
+    """Return ``{source filename: chunk count}`` for everything in the collection."""
+    collection = collection if collection is not None else get_collection()
+    counts: dict[str, int] = {}
+    for meta in collection.get(include=["metadatas"])["metadatas"]:
+        source = str(meta.get("source", "unknown"))
+        counts[source] = counts.get(source, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def clear_collection(collection=None) -> None:
+    collection = collection if collection is not None else get_collection()
+    ids = collection.get(include=[])["ids"]
+    if ids:
+        collection.delete(ids=ids)
+
+
 if __name__ == "__main__":
     import argparse
 
