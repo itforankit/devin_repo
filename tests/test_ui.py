@@ -8,7 +8,7 @@ from streamlit.testing.v1 import AppTest
 
 from src import agent, ingestion
 from src.agent import AgentResult, Citation
-from src.ui import format_latency, format_sources, preview, to_message
+from src.ui import format_latency, format_sources, to_message
 
 APP_PATH = Path(__file__).resolve().parent.parent / "app.py"
 
@@ -29,11 +29,6 @@ def test_format_latency():
 def test_format_sources_lists_filename_and_chunk():
     cites = [Citation(1, "a.pdf", 0, "x"), Citation(2, "b.docx", 7, "y")]
     assert format_sources(cites) == "- **[1]** `a.pdf` — chunk 0\n- **[2]** `b.docx` — chunk 7"
-
-
-def test_preview_truncates_and_collapses_whitespace():
-    assert preview("a\n\n b") == "a b"
-    assert preview("x" * 50, limit=10) == "x" * 9 + "…"
 
 
 def test_to_message():

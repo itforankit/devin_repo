@@ -10,7 +10,7 @@ import hashlib
 import streamlit as st
 
 from src import agent, ingestion
-from src.ui import format_latency, format_sources, preview, to_message
+from src.ui import format_latency, format_sources, to_message
 
 st.set_page_config(page_title="Agentic RAG", page_icon="📚", layout="wide")
 
@@ -31,7 +31,7 @@ def render_assistant_extras(msg: dict) -> None:
         with st.expander("Show cited passages"):
             for c in msg["sources"]:
                 st.markdown(f"**[{c.number}] {c.label}**")
-                st.caption(preview(c.text))
+                st.code(c.text, language=None, wrap_lines=True)
     if msg.get("queries"):
         st.caption("Search queries: " + " · ".join(f"“{q}”" for q in msg["queries"]))
     if msg.get("latency"):

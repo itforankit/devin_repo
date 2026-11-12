@@ -6,8 +6,6 @@ from collections.abc import Sequence
 
 from src.agent import AgentResult, Citation
 
-PREVIEW_CHARS = 300
-
 
 def format_latency(retrieval_ms: float, llm_ms: float, total_ms: float) -> str:
     return f"⏱ retrieval {retrieval_ms:.0f} ms · LLM {llm_ms:.0f} ms · total {total_ms:.0f} ms"
@@ -16,11 +14,6 @@ def format_latency(retrieval_ms: float, llm_ms: float, total_ms: float) -> str:
 def format_sources(sources: Sequence[Citation]) -> str:
     """Markdown list mapping each citation number to filename + chunk index."""
     return "\n".join(f"- **[{c.number}]** `{c.source}` — chunk {c.chunk_index}" for c in sources)
-
-
-def preview(text: str, limit: int = PREVIEW_CHARS) -> str:
-    text = " ".join(text.split())
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
 
 
 def to_message(result: AgentResult) -> dict:
