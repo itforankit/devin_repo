@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 from collections.abc import Callable, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO
@@ -19,6 +20,7 @@ from src import config
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 EMBED_BATCH_SIZE = 100
+EMBED_MAX_WORKERS = 4
 
 Source = Path | BinaryIO
 
@@ -78,14 +80,22 @@ def embed_texts(
     client=None,
     model: str = config.EMBEDDING_MODEL,
     batch_size: int = EMBED_BATCH_SIZE,
+    max_workers: int = EMBED_MAX_WORKERS,
 ) -> list[list[float]]:
+    """Embed ``texts`` in batches, sending up to ``max_workers`` requests concurrently."""
     client = client or config.get_openai_client()
-    vectors: list[list[float]] = []
-    for start in range(0, len(texts), batch_size):
-        batch = list(texts[start : start + batch_size])
+    batches = [list(texts[i : i + batch_size]) for i in range(0, len(texts), batch_size)]
+
+    def embed_batch(batch: list[str]) -> list[list[float]]:
         response = client.embeddings.create(model=model, input=batch)
-        vectors.extend(item.embedding for item in sorted(response.data, key=lambda d: d.index))
-    return vectors
+        return [item.embedding for item in sorted(response.data, key=lambda d: d.index)]
+
+    if len(batches) <= 1 or max_workers <= 1:
+        results = [embed_batch(b) for b in batches]
+    else:
+        with ThreadPoolExecutor(max_workers=min(max_workers, len(batches))) as pool:
+            results = list(pool.map(embed_batch, batches))
+    return [vector for batch in results for vector in batch]
 
 
 def get_collection(persist_dir: str | Path | None = None, name: str = config.DEFAULT_COLLECTION):

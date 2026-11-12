@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import io
+import threading
+from types import SimpleNamespace
 
 import pytest
 from docx import Document
 
 from src import ingestion
 from src.config import EMBEDDING_MODEL
-from tests.conftest import fake_vector
+from tests.conftest import FakeOpenAI, fake_vector
 
 
 def _pattern(n: int) -> str:
@@ -113,8 +115,32 @@ class TestEmbeddingAndStorage:
         vectors = ingestion.embed_texts(texts, client=fake_openai, batch_size=2)
         assert vectors == [fake_vector(t) for t in texts]
         calls = fake_openai.embeddings.calls
-        assert [len(c["input"]) for c in calls] == [2, 2, 1]
+        assert sorted(len(c["input"]) for c in calls) == [1, 2, 2]
         assert all(c["model"] == EMBEDDING_MODEL for c in calls)
+
+    def test_embed_texts_sends_batches_concurrently(self):
+        barrier = threading.Barrier(3, timeout=5)
+        inner = FakeOpenAI()
+
+        class BlockingEmbeddings:
+            def create(self, model, input):
+                barrier.wait()  # only passes if all 3 batches are in flight at once
+                return inner.embeddings.create(model=model, input=input)
+
+        client = SimpleNamespace(embeddings=BlockingEmbeddings())
+        texts = [f"t{i}" for i in range(6)]
+        vectors = ingestion.embed_texts(texts, client=client, batch_size=2, max_workers=3)
+        assert vectors == [fake_vector(t) for t in texts]
+
+    def test_embed_texts_sequential_when_single_worker(self, fake_openai):
+        texts = [f"t{i}" for i in range(5)]
+        vectors = ingestion.embed_texts(texts, client=fake_openai, batch_size=2, max_workers=1)
+        assert vectors == [fake_vector(t) for t in texts]
+        assert [c["input"] for c in fake_openai.embeddings.calls] == [
+            ["t0", "t1"],
+            ["t2", "t3"],
+            ["t4"],
+        ]
 
     def test_ingest_file_stores_chunks_with_metadata(self, tmp_path, fake_openai, collection):
         path = tmp_path / "guide.txt"
