@@ -84,7 +84,7 @@ def test_baseline_is_single_retrieval_and_single_llm_call():
     assert len(client.calls) == 1
     assert "tools" not in client.calls[0]
     user = client.calls[0]["messages"][-1]["content"]
-    assert "[1] (source: a.txt, chunk 0)\nRefunds within 30 days." in user
+    assert '<source id="1" file="a.txt">\nRefunds within 30 days.\n</source>' in user
     assert out.answer == "Within 30 days [1]."
     assert [c.source for c in out.sources] == ["a.txt"]
 
